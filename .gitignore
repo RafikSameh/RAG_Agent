@@ -1,0 +1,7 @@
+*.db
+tmp/
+__pycache__/
+
+data
+chat_sessions.db
+

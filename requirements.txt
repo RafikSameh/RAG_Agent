@@ -1,0 +1,37 @@
+# Core Framework
+agno>=0.1.0
+
+# Web Framework
+streamlit>=1.30.0
+
+# AI/ML Models
+torch>=2.0.0
+transformers>=4.35.0
+sentence-transformers>=2.2.0
+huggingface-hub>=0.19.0
+
+# Vector Database
+lancedb>=0.3.0
+
+# PDF Processing
+PyMuPDF>=1.23.0  # fitz
+pdf2image>=1.16.0
+Pillow>=10.0.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Database
+sqlite3  # Built-in with Python
+
+# Utilities
+python-dotenv>=1.0.0
+pathlib  # Built-in with Python 3.4+
+uuid  # Built-in with Python
+
+# Optional but recommended for PDF rendering
+# Note: pdf2image requires poppler-utils to be installed separately
+# Windows: Download poppler from https://github.com/oschwartz10612/poppler-windows/releases/
+# Linux: sudo apt-get install poppler-utils
+# macOS: brew install poppler
