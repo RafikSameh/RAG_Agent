@@ -1,0 +1,142 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class AgnoAPI {
+    -Agent agent
+    -str PDF_PATH
+    -str TABLE_NAME
+    -str URI_PATH
+    -SqliteDb AGENT_DATABASE
+    -Path pdf_pages_dir
+    -Path pdf_images_dir
+    -list session_records
+    -list existing_sessions
+    -list session_labels
+    -dict label_to_session_id
+    
+    +__init__(pdf_path, db_path)
+    +render_pdf_pages(pdf_path, out_dir)
+    +extract_pdf_images(pdf_path, save_dir, min_w, min_h)
+    +get_referenced_images(referenced_pages, view_mode)
+    +load_model() HuggingFace
+    +safe_lancedb(table_name, uri, embedder, pdf_changed) LanceDb
+    +initialize_agent(session_id, pdf_changed) Agent
+    +create_new_session() str
+    +get_session_data(session_id)
+    +get_session_messages(session_id) list
+    +Sessions_manager() tuple
+    +update_session(result, session_id)
+}
+
+class Agent {
+    +str name
+    +str session_id
+    +HuggingFace model
+    +Knowledge knowledge
+    +bool add_knowledge_to_context
+    +bool add_history_to_context
+    +SqliteDb db
+    +bool search_knowledge
+    +bool markdown
+    +str description
+    +list instructions
+    +bool add_memories_to_context
+    +bool enable_agentic_memory
+    +bool enable_session_summaries
+    +bool read_chat_history
+    +list pre_hooks
+    +int num_history_runs
+    +int num_history_sessions
+    +bool store_media
+    +bool update_knowledge
+}
+
+class SqliteDb {
+    +str db_file
+    +upsert_session(session)
+    +get_session(session_id, session_type)
+    +get_sessions(session_type, deserialize)
+}
+
+class AgentSession {
+    +str session_id
+    +str agent_id
+    +int created_at
+    +str user_id
+    +list runs
+    +str summary
+    +get_messages_for_session()
+    +get_session_summary()
+    +upsert_run(run)
+}
+
+class HuggingFace {
+    +str id
+    +str provider
+    +int max_tokens
+    +str api_key
+}
+
+class Knowledge {
+    +LanceDb vector_db
+    +add_content(path, skip_if_exists, reader)
+}
+
+class LanceDb {
+    +str table_name
+    +str uri
+    +SearchType search_type
+    +SentenceTransformerEmbedder embedder
+    +str on_bad_vectors
+    +table
+}
+
+class SentenceTransformerEmbedder {
+    +get_embedding(text)
+}
+
+class PDFReader {
+    +str name
+    +str chunk_by
+}
+
+class PromptInjectionGuardrail {
+}
+
+class PIIDetectionGuardrail {
+    +bool mask_pii
+}
+
+class SessionSummaryManager {
+    +HuggingFace model
+    +create_session_summary(session)
+}
+
+AgnoAPI --> Agent : creates/uses
+AgnoAPI --> SqliteDb : manages
+AgnoAPI --> HuggingFace : loads
+AgnoAPI --> Knowledge : initializes
+AgnoAPI --> LanceDb : configures
+AgnoAPI --> SentenceTransformerEmbedder : uses
+AgnoAPI --> PDFReader : creates
+AgnoAPI --> PromptInjectionGuardrail : uses
+AgnoAPI --> PIIDetectionGuardrail : uses
+AgnoAPI --> SessionSummaryManager : uses
+AgnoAPI --> AgentSession : manages
+
+Agent --> HuggingFace : uses
+Agent --> Knowledge : uses
+Agent --> SqliteDb : stores to
+Agent --> PromptInjectionGuardrail : pre_hooks
+Agent --> PIIDetectionGuardrail : pre_hooks
+
+Knowledge --> LanceDb : uses
+Knowledge --> PDFReader : uses
+
+LanceDb --> SentenceTransformerEmbedder : uses
+
+SqliteDb --> AgentSession : stores/retrieves
+
+SessionSummaryManager --> HuggingFace : uses
+
+@enduml
